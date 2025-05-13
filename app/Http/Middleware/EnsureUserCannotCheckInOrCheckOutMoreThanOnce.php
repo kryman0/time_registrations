@@ -17,9 +17,7 @@ class EnsureUserCannotCheckInOrCheckOutMoreThanOnce
 
         if ($checkIn && $this->hasUserCheckedInOrCheckedOut($userId, 'has_checked_in')) {
             return response("You have already checked in!", Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($checkOut && $this->hasUserCheckedInOrCheckedOut($userId, 'has_checked_out')) {
+        } else if ($checkOut && $this->hasUserCheckedInOrCheckedOut($userId, 'has_checked_out')) {
             return response("You have already checked out!", Response::HTTP_BAD_REQUEST);
         }
 
