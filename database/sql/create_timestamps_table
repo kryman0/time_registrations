@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS timestamps;
+
+CREATE TABLE IF NOT EXISTS timestamps (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    check_in TIMESTAMP NULL,
+    check_out TIMESTAMP NULL,
+    has_checked_in BOOLEAN NULL,
+    has_checked_out BOOLEAN NULL,
+    user_id INT NOT NULL REFERENCES users (id)
+);

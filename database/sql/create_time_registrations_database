@@ -1,0 +1,5 @@
+DROP DATABASE IF EXISTS time_registrations;
+
+CREATE DATABASE IF NOT EXISTS time_registrations
+    CHARACTER SET = utf8
+    COLLATE = utf8_general_ci;

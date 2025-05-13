@@ -1,0 +1,4 @@
+INSERT INTO users VALUES (ssn, password) (
+    '19600501-0123',
+    '$2y$12$cHSZaoJH9NvfNZjvG3XbZO05ZsUQhqhAQlsMhH26rs92qJmYVn/oC'
+);
