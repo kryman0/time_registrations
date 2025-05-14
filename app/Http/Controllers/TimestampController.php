@@ -12,7 +12,7 @@ class TimestampController extends Controller
         return date_create_immutable()->format('Y-m-d H:i:s');
     }
     public function checkIn(Request $request): Response {
-        if ($request->has('check-out')) {
+        if ($request->has('check_out')) {
             return response('Wrong API: use "checkin" instead!', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -44,7 +44,7 @@ class TimestampController extends Controller
             return response('You need to check in first!', Response::HTTP_BAD_REQUEST);
         }
 
-        if ($request->has('check-in')) {
+        if ($request->has('check_in')) {
             return response('Wrong API: use "checkout" instead!', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
