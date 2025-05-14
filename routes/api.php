@@ -16,6 +16,7 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(TimestampController::class)->group(function () {
     Route::post('/user/{id}/checkin', 'checkin')->middleware([EnsureTokenIsValid::class, EnsureUserCannotCheckInOrCheckOutMoreThanOnce::class])->name('user.checkin');
+    Route::post('/user/{id}/checkout', 'checkout')->middleware([EnsureTokenIsValid::class, EnsureUserCannotCheckInOrCheckOutMoreThanOnce::class])->name('user.checkin');
 });
 
 Route::controller(AdminController::class)->group(function () {

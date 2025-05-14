@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS timestamps (
     check_out TIMESTAMP NULL,
     has_checked_in BOOLEAN NULL,
     has_checked_out BOOLEAN NULL,
-    latitude DOUBLE SIGNED NULL,
-    longitude DOUBLE SIGNED NULL,
+    latitude_check_in DOUBLE SIGNED NULL,
+    latitude_check_out DOUBLE SIGNED NULL,
+    longitude_check_in DOUBLE SIGNED NULL,
+    longitude_check_out DOUBLE SIGNED NULL,
     user_id INT NOT NULL REFERENCES users (id)
 );

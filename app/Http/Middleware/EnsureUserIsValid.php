@@ -23,7 +23,7 @@ class EnsureUserIsValid
         $user = User::where('ssn', '=', $ssn)->first();
 
         if (!$user || !$this->isUserPasswordValid($user, $password)) {
-            return response("Username or password is incorrect!");
+            return response("Username or password is incorrect!", Response::HTTP_UNAUTHORIZED);
         }
 
         $request->session()->put("userId", $user->id);

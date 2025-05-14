@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 
@@ -51,6 +51,7 @@ class UserController extends Controller
     public function account(int $userId, Request $request): JsonResponse {
         // hämta users tidsrapporteringar; lägg till i db
         $data = User::find($userId)->timestamps;
+        var_dump($userId, $data);
 
         return response()->json($data);
     }

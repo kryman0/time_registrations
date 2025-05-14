@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class EnsureTokenIsValid
 {
@@ -18,14 +18,14 @@ class EnsureTokenIsValid
     public function handle(Request $request, Closure $next): Response
     {
         if (!$request->session()->has("user")) {
-            return response("User is not logged in", Response::HTTP_UNAUTHORIZED);
+            return response("User is not logged in!", Response::HTTP_UNAUTHORIZED);
         }
 
         $token = $request->session()->get("user");
 
         try {
             if ($this->getAppKey() !== Crypt::decryptString($token)) {
-                return response("App key is not valid", Response::HTTP_UNAUTHORIZED);
+                return response("App key is not valid!", Response::HTTP_UNAUTHORIZED);
             }
         } catch (DecryptException $e) {
             return response('Could not validate user token: ' . $e->getMessage(), Response::HTTP_BAD_REQUEST);

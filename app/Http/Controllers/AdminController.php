@@ -22,6 +22,6 @@ class AdminController extends Controller {
         while ($arr = current($usr)) { if ($arr['id'] === 2) { echo $arr['id']; $arr = prev($usr); echo $arr['id']; break; } next($usr); }
         */
 
-        return response('Time successfully changed.', 200);
+        return response('Time successfully changed!', 200);
     }
 }

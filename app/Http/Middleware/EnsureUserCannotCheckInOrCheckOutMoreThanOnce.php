@@ -2,18 +2,19 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Timestamp;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserCannotCheckInOrCheckOutMoreThanOnce
 {
     public function handle(Request $request, Closure $next): Response
     {
         $userId = $request->post('id');
-        $checkIn = $request->post('checkIn');
-        $checkOut = $request->post('checkOut');
+        $checkIn = $request->post('check-in');
+        $checkOut = $request->post('check-out');
 
         if ($checkIn && $this->hasUserCheckedInOrCheckedOut($userId, 'has_checked_in')) {
             return response("You have already checked in!", Response::HTTP_BAD_REQUEST);
@@ -24,7 +25,14 @@ class EnsureUserCannotCheckInOrCheckOutMoreThanOnce
         return $next($request);
     }
 
-    private function hasUserCheckedInOrCheckedOut(int $userId, string $checkedInOrCheckedOut): bool {
-        return User::find($userId)->timestamps()->firstWhere($checkedInOrCheckedOut, true);
+    private function hasUserCheckedInOrCheckedOut(int $userId, string $hasCheckedInOrCheckedOut): bool {
+        $ts = Timestamp::where([
+            ['user_id', '=', $userId],
+            [ $hasCheckedInOrCheckedOut, '=', true]])
+            ->orderByDesc('check_in')
+            ->limit(1)
+            ->get();
+
+        return $ts->isNotEmpty();
     }
 }

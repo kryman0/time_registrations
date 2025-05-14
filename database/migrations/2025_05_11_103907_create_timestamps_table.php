@@ -17,8 +17,10 @@ return new class extends Migration
             $table->timestamp('check_out')->nullable(true);
             $table->boolean('has_checked_in')->nullable(true);
             $table->boolean('has_checked_out')->nullable(true);
-            $table->double('latitude')->nullable(true);
-            $table->double('longitude')->nullable(true);
+            $table->double('latitude_check_in')->nullable(true);
+            $table->double('latitude_check_out')->nullable(true);
+            $table->double('longitude_check_in')->nullable(true);
+            $table->double('longitude_check_out')->nullable(true);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
         });
