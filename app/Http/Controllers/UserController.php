@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Timestamp;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,11 +48,13 @@ class UserController extends Controller
         return redirect()->route("user.account", $userId);
     }
 
-    public function account(int $userId, Request $request): JsonResponse {
-        // hämta users tidsrapporteringar; lägg till i db
-        $data = User::find($userId)->timestamps;
-        var_dump($userId, $data);
+    public function account(int $userId): Response {
+        $data = Timestamp::all()->where('user_id', $userId)->take(10)->toArray();
 
-        return response()->json($data);
+        if (!$data) {
+            return response('No check in has been registered yet!');
+        }
+
+        return response()->json($data)->header('Content-Type', 'application/json');
     }
 }

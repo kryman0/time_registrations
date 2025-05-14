@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Timestamp;
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,13 +25,16 @@ class EnsureUserCannotCheckInOrCheckOutMoreThanOnce
     }
 
     private function hasUserCheckedInOrCheckedOut(int $userId, string $hasCheckedInOrCheckedOut): bool {
-        $ts = Timestamp::where([
-            ['user_id', '=', $userId],
-            [ $hasCheckedInOrCheckedOut, '=', true]])
+        $ts = Timestamp::where('user_id', '=', $userId)
             ->orderByDesc('check_in')
             ->limit(1)
-            ->get();
+            ->get()
+            ->toArray();
 
-        return $ts->isNotEmpty();
+        if (!$ts) {
+            return false;
+        }
+
+        return $ts[0][$hasCheckedInOrCheckedOut];
     }
 }
