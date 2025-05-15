@@ -18,7 +18,6 @@ class AdminController extends Controller {
         $checkIn = $request->post('check_in_time');
         $checkOut = $request->post('check_out_time');
 
-
         $ts = Timestamp::find($tsId);
         $checkIn ? $ts->check_in = $checkIn : $ts->check_out = $checkOut;
         $ts->save();

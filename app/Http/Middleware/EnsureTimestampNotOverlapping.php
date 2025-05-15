@@ -16,21 +16,26 @@ class EnsureTimestampNotOverlapping
         $checkInTime = $request->post('check_in_time');
         $checkOutTime = $request->post('check_out_time');
 
-
         if ((!$checkIn && !$checkOut) && ($checkIn && $checkOut)) {
             return response('Please choose either check in or check out to modify!', Response::HTTP_FORBIDDEN);
         }
 
         $currTs = Timestamp::find($tsId);
-        $prevTs = Timestamp::where('id', '<', $tsId)->orderByDesc('id')->limit(1)->get();
-        $nextTs = Timestamp::where('id', '>', $tsId)->orderBy('id')->limit(1)->get();
+        $prevTs = Timestamp::where('id', '<', $tsId)->orderByDesc('id')->limit(1)->get()->first();
+        $nextTs = Timestamp::where('id', '>', $tsId)->orderBy('id')->limit(1)->get()->first();
 
         if ($checkIn && $this->isCheckInTimeOverlapping($checkInTime, $currTs, $prevTs)) {
-            return response("Check in time can't be modified. Check in $currTs->check_in is greater than check out: $currTs->check_out", Response::HTTP_BAD_REQUEST);
+            $prevMsg = $prevTs ? " or previous check out $prevTs->check_out" : "";
+            $respMsg = "Check in $checkInTime can't be modified. It's either greater than check out $currTs->check_out" . $prevMsg;
+
+            return response($respMsg, Response::HTTP_BAD_REQUEST);
         }
 
         if ($checkOut && $this->isCheckOutTimeOverlapping($checkOutTime, $currTs, $nextTs)) {
-            return response("Check out time can't be modified. Check out $currTs->check_out is greater than check in: $currTs->check_out", Response::HTTP_BAD_REQUEST);
+            $nextMsg = $nextTs ? " or next check in $nextTs->check_in" : "";
+            $respMsg = "Check out $checkOutTime can't be modified. It's either greater than check in: $currTs->check_out" . $nextMsg;
+
+            return response($respMsg, Response::HTTP_BAD_REQUEST);
         }
 
         return $next($request);
