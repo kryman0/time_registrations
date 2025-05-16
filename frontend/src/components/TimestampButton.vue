@@ -1,7 +1,14 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
-  <button type="submit">btn</button>
+  <input type="button" />
 </template>
+
+<style>
+  input {
+    width: 50px;
+    height: 20px;
+    border: 1px solid #ccc;
+  }
+</style>
