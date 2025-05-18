@@ -3,35 +3,23 @@ defineProps({
   check_in: {
     type: Boolean,
     required: false,
-    default: true,
+    default: false,
   },
   check_out: {
     type: Boolean,
     required: false,
-    default: true,
-  },
-  checkInValue: {
-    type: String,
-    required: false,
-    default: 'Check in',
-  },
-  checkOutValue: {
-    type: String,
-    required: false,
-    default: 'Check out',
+    default: false,
   },
 })
-
 </script>
 
 <template>
-  <input type="button" :check_in />
+  <Button v-if="check_in" :check_in />
+  <Button v-else :check_out />
 </template>
 
 <style>
-  input {
-    width: 100px;
-    height: 20px;
-    border: 1px solid #ccc;
+  button {
+    border: 1px solid green;
   }
 </style>

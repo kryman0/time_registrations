@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import Input from '@/components/Input.vue';
-import Button from '@/components/Button.vue';
+import { useRouter } from 'vue-router'
 
 const validSsnPattern: string = '^[1-9][0-9]{7}-[0-9]{4}$'
 const ssnFormat: string = 'YYYYMMDD-NNNN'
 const passwordFormat: string = 'XXXXXXXXXX'
+
+const router = useRouter()
+
+function route() {
+  // fetch and send in id from db
+  router.push('/user/1/account')
+}
+
 
 </script>
 
@@ -23,9 +30,14 @@ const passwordFormat: string = 'XXXXXXXXXX'
     <div class="input-container">
       <Button
         class="block w-20 border border-white mt-5 relative -right-12 max-xs:w-45 max-xs:left-0"
-        value="Login" />
+        value="Login"
+        @click="route"
+      />
     </div>
 
+    <div class="input-container">
+      <Footer />
+    </div>
   </div>
 </template>
 
@@ -47,16 +59,5 @@ const passwordFormat: string = 'XXXXXXXXXX'
     @media (max-width: 320px) {
       width: 100%;
     }
-  }
-
-  .input-button {
-    display: block;
-    width: 100px;
-    margin: 0 auto;
-    border: 1px solid yellow;
-    @media (max-width: 320px) {
-      width: max-content;
-    }
-    //border: 1px solid yellow;
   }
 </style>

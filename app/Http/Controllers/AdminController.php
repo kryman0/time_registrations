@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller {
     public function showTimestamps(): Response {
-        $timestamps = Timestamp::all()->sortDesc()->toArray();
+        $timestamps = Timestamp::all()->groupBy(['check_in', 'user_id'])->sortByDesc(null, SORT_DESC)->toArray();
 
-        return response()->json($timestamps)->header('Content-Type', 'application/json');
+        return response()->json($timestamps, options: JSON_PRETTY_PRINT)->header('Content-Type', 'application/json');
     }
 
     public function editTimestamp(Request $request): Response {

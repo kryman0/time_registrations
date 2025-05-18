@@ -7,7 +7,5 @@ import Navigator from "@/components/Navigator.vue";
   <header>
     <Navigator />
   </header>
-  <main>
-  </main>
   <RouterView />
 </template>

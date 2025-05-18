@@ -4,14 +4,17 @@
 <template>
   <nav>
     <ul class="text-right">
-      <li class="xs:pr-10"><RouterLink class="router-link xs:pr-10" to="/login">Login</RouterLink></li>
+      <li><RouterLink class="router-link" to="/">Home</RouterLink></li>
+      <li><RouterLink class="router-link" to="/login">Login</RouterLink></li>
       <li><RouterLink class="router-link" to="/admin">Admin</RouterLink></li>
     </ul>
   </nav>
 </template>
 
 <style>
-li {
+  li {
+    display: block;
+
     @media (min-width: 320px) {
       display: inline-block;
     }
