@@ -4,6 +4,15 @@ defineProps({
     type: String,
     required: true,
     default: 'text',
+  },
+  placeholder: {
+    type: String,
+    required: true,
+  },
+  id: {
+    type: String,
+    required: true,
+    default: '',
   }
 })
 
@@ -11,20 +20,23 @@ defineProps({
 </script>
 
 <template>
-  <input :type />
+  <input :id :type :placeholder />
 </template>
 
 <style>
-  input {
+  /*input {
+    //border: 1px solid blue;
+  }*/
+  /*input {
     display: block;
     margin: 10px 0;
     padding: 3px;
     max-width: 200px;
     border: 1px solid blue;
     border-radius: 5px;
-  }
+  }*/
 
-  input:invalid {
+  /*input:invalid {
     border: 1px solid red;
-  }
+  }*/
 </style>
