@@ -8,9 +8,18 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller {
     public function showTimestamps(): Response {
-        $timestamps = Timestamp::all()->groupBy(['check_in', 'user_id'])->sortByDesc(null, SORT_DESC)->toArray();
+        $timestamps = Timestamp::all()->sortByDesc('check_in')->toArray();
 
-        return response()->json($timestamps, options: JSON_PRETTY_PRINT)->header('Content-Type', 'application/json');
+        $dictByCheckInDates = [];
+        foreach ($timestamps as $value) {
+            if (!key_exists($value['check_in'], $dictByCheckInDates)) {
+                $dictByCheckInDates[$value['check_in']] = [];
+            }
+
+            $dictByCheckInDates[$value['check_in']][] = $value;
+        }
+
+        return response()->json($dictByCheckInDates)->header('Content-Type', 'application/json');
     }
 
     public function editTimestamp(Request $request): Response {
