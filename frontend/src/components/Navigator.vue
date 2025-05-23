@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <nav class="mb-5" ref="navigation-menu">
+  <nav class="mb-5">
     <ul class="text-right">
       <li><RouterLink class="router-link" to="/">Home</RouterLink></li>
       <li><RouterLink class="router-link" to="/login">Login</RouterLink></li>
@@ -14,11 +14,10 @@
 <style>
   li {
     display: block;
+    margin-left: 20px;
 
     @media (min-width: 320px) {
       display: inline-block;
     }
-
-    border: 1px solid green;
   }
 </style>

@@ -123,7 +123,7 @@ const jsonData =
         <h1>Welcome! {{$route.params.id}}</h1>
       </div>
       <div class="row-2 col-span-full justify-self-center self-center max-xs:w-full">
-        <Button value="Change password" @click="isPasswordViewActive = true" />
+        <Button class="change-password-button" value="Change password" @click="isPasswordViewActive = true" />
         <div v-if="isPasswordViewActive" class="relative">
           <ChangePassword v-model="isPasswordViewActive" />
         </div>
@@ -136,9 +136,6 @@ const jsonData =
       </div>
     </div>
 
-
-
-    <!-- fix to use only data for the specific user: account api -->
     <div class="grid-wrapper border border-white">
       <div class="header">
         <div>Datum</div>
@@ -180,7 +177,7 @@ const jsonData =
   border: 1px solid grey;
 }
 
-button {
+.change-password-button {
   width: 130px;
   padding: 5px;
 
@@ -188,8 +185,4 @@ button {
     width: 100%;
   }
 }
-
-/*button:first-of-type {
-  margin-right: 40%;
-}*/
 </style>

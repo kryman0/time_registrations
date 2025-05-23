@@ -17,9 +17,3 @@ defineProps({
   <Button v-if="check_in" :check_in />
   <Button v-else :check_out />
 </template>
-
-<style>
-  button {
-    border: 1px solid green;
-  }
-</style>

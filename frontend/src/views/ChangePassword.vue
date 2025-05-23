@@ -11,11 +11,11 @@ const isPasswordViewActive = defineModel({ type: Boolean, default: false })
     <div>
       <p>
         <label for="new-password">Enter new password</label>
-        <Input class="block" id="new-password" type="password" placeholder="XXXXXX" />
+        <Input class="change-password-input" id="new-password" type="password" placeholder="XXXXXX" />
       </p>
       <p>
         <label for="confirm-new-password">Re-enter new password</label>
-        <Input id="confirm-new-password" type="password" placeholder="XXXXXX" />
+        <Input class="change-password-input" id="confirm-new-password" type="password" placeholder="XXXXXX" />
       </p>
       <p>
         <Button class="submit" />
@@ -39,7 +39,7 @@ const isPasswordViewActive = defineModel({ type: Boolean, default: false })
   }
 }
 
-input, label {
+/*.change-password-input {
   display: block;
   margin: 10px 5px 0;
   //width: 100%;
@@ -49,9 +49,9 @@ input, label {
     margin: 10px 5px 0;
   }
   border: 1px solid black;
-}
+}*/
 
-button.submit {
+.submit {
   display: block;
   margin: 15px auto;
 
