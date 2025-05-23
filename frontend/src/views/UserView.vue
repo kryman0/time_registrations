@@ -5,7 +5,6 @@ import ChangePassword from "@/views/ChangePassword.vue";
 
 const isPasswordViewActive = ref(false);
 
-
 const jsonData =
 {
   "2025-05-17 08:00:00": [
@@ -125,7 +124,7 @@ const jsonData =
       </div>
       <div class="row-2 col-span-full justify-self-center self-center max-xs:w-full">
         <Button value="Change password" @click="isPasswordViewActive = true" />
-        <div v-if="isPasswordViewActive">
+        <div v-if="isPasswordViewActive" class="relative">
           <ChangePassword v-model="isPasswordViewActive" />
         </div>
       </div>

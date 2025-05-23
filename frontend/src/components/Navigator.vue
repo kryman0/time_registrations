@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <nav>
+  <nav class="mb-5" ref="navigation-menu">
     <ul class="text-right">
       <li><RouterLink class="router-link" to="/">Home</RouterLink></li>
       <li><RouterLink class="router-link" to="/login">Login</RouterLink></li>
