@@ -13,10 +13,12 @@ defineProps({
     type: String,
     required: true,
     default: '',
-  }
+  },
 })
+
+const model: string = defineModel({type: String, default: ''})
 </script>
 
 <template>
-  <input :id :type :placeholder />
+  <input v-model="model" :id :type :placeholder />
 </template>
