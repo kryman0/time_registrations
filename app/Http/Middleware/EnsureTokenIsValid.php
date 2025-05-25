@@ -17,11 +17,11 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->session()->has("user")) {
+        if (!$request->header('token')) {
             return response("User is not logged in!", Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = $request->session()->get("user");
+        $token = $request->header('token');
 
         try {
             if ($this->getAppKey() !== Crypt::decryptString($token)) {

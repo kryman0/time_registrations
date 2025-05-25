@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { UrlConstant} from '@/Constants/UrlConstant.ts'
+import UrlConstants from '@/Constants/UrlConstants.ts'
+import HttpResponsesConstant from '@/Constants/HttpResponseConstant.ts'
+import RouteConstants from '@/Constants/RouteConstants.ts'
 
 const [ssn, password]: [string, string] = [ref(''), ref('')]
 const errorResponse: string = ref('')
@@ -9,40 +11,54 @@ const validSsnPattern: string = '^[1-9][0-9]{7}-[0-9]{4}$'
 const ssnFormat: string = 'YYYYMMDD-NNNN'
 const passwordFormat: string = 'XXXXXXXXXX'
 const router = useRouter()
+const hourMs: number = 60 * 60 * 1000
 
-// watch((errorResponse), async => ssn, () => {
-//
-// })
-
-async function login(): object | string {
+async function login(): void {
   try {
-    const response = await fetch(UrlConstant.apiLoginUrl, {
+    const response = await fetch(UrlConstants.apiLoginUrl, {
       method: 'POST',
-      body: { ssn: ssn, password: password },
+      body: JSON.stringify({ ssn: ssn.value, password: password.value }),
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
 
     switch (response.status) {
+      case 200:
+        const data = await response.json()
+        try {
+          await window.cookieStore.set({
+            name: 'userId',
+            value: data.userId,
+            expires: Date.now() + hourMs,
+          })
+          await window.cookieStore.set({
+            name: 'token',
+            value: data.token,
+            expires: Date.now() + hourMs,
+          })
+        } catch (error) {
+          errorResponse.value = HttpResponsesConstant.noCookieSet
+        }
+        routeToUserAccount(data.userId)
+        break
       case 401:
-        errorResponse.value = 'Unauthorized!'
+        errorResponse.value = HttpResponsesConstant.unauthorized
         break
       default:
         errorResponse.value = ''
     }
   } catch (error) {
-    errorResponse.value = await error
+    errorResponse.value = error.toString()
   }
-  
-  routeToUserAccount(1)
 }
 
-function routeToUserAccount(int: userId): void {
+function routeToUserAccount(userId: number): void {
   router.push({
-    name: 'user',
-    params: { id: userId }
+    name: RouteConstants.user.name,
+    params: { id: userId },
   })
 }
-
-
 </script>
 
 <template>

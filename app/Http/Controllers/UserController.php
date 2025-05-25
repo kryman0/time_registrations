@@ -37,25 +37,23 @@ class UserController extends Controller
         return response('Password has been changed!', Response::HTTP_OK);
     }
 
-    public function login(Request $request): RedirectResponse {
+    public function login(Request $request): Response {
         $userId = $request->session()->get("userId");
         $request->session()->remove("userId");
 
         $token = $this->getEncryptedToken();
 
-        $request->session()->put("user", $token);
-        $request->session()->save();
-
-        return redirect()->route("user.account", $userId);
+        return response()->json(['userId' => $userId, 'token' => $token])->setStatusCode(Response::HTTP_OK);
     }
 
     public function account(int $userId): Response {
-        $data = Timestamp::all()->where('user_id', $userId)->take(10)->toArray();
+        $data = Timestamp::all()->where('user_id', $userId)->sortByDesc('check_in')->toArray();
+        $data = array_values($data);
 
         if (!$data) {
             return response('No check in has been registered yet!');
         }
 
-        return response()->json($data)->header('Content-Type', 'application/json');
+        return response()->json($data)->header('Content-Type', 'application/json')->setStatusCode(Response::HTTP_OK);
     }
 }

@@ -1,122 +1,55 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import TimestampButton from "@/components/TimestampButton.vue"
 import ChangePassword from "@/views/ChangePassword.vue";
+import UrlConstants from '@/Constants/UrlConstants.ts'
+import HttpResponseConstant from "@/Constants/HttpResponseConstant.ts";
+import HttpResponsesConstant from "@/Constants/HttpResponseConstant.ts";
 
 const isPasswordViewActive = ref(false);
+const [userId, token]: [string, string] = [ref(''), ref('')]
+const errorResponse: string = ref('')
+const data: object = ref(null)
 
-const jsonData =
-{
-  "2025-05-17 08:00:00": [
-    {
-      "id": 27,
-      "check_in": "2025-05-17 08:00:00",
-      "check_out": "2025-05-17 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 2
-    }
-  ],
-  "2025-05-16 08:00:00": [
-    {
-      "id": 23,
-      "check_in": "2025-05-16 08:00:00",
-      "check_out": "2025-05-16 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 1
-    },
-    {
-      "id": 24,
-      "check_in": "2025-05-16 08:00:00",
-      "check_out": "2025-05-16 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 2
-    },
-    {
-      "id": 25,
-      "check_in": "2025-05-16 08:00:00",
-      "check_out": "2025-05-16 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 3
-    }
-  ],
-  "2025-05-15 08:00:00": [
-    {
-      "id": 17,
-      "check_in": "2025-05-15 08:00:00",
-      "check_out": "2025-05-15 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 2
-    },
-    {
-      "id": 18,
-      "check_in": "2025-05-15 08:00:00",
-      "check_out": "2025-05-15 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 1
-    },
-    {
-      "id": 22,
-      "check_in": "2025-05-15 08:00:00",
-      "check_out": "2025-05-15 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 3
-    }
-  ],
-  "2025-05-14 08:00:00": [
-    {
-      "id": 26,
-      "check_in": "2025-05-14 08:00:00",
-      "check_out": "2025-05-14 17:00:00",
-      "has_checked_in": 0,
-      "has_checked_out": 1,
-      "latitude_check_in": null,
-      "latitude_check_out": null,
-      "longitude_check_in": null,
-      "longitude_check_out": null,
-      "user_id": 2
-    }
-  ]
+async function getCookieStore(): void {
+  userId.value = await window.cookieStore.get('userId')
+  token.value = await window.cookieStore.get('token')
+
+  if (!userId.value || !token.value) {
+    errorResponse.value = HttpResponseConstant.noCookieGet
+  }
 }
 
+onBeforeMount(async (): Promise<void> => {
+  await getCookieStore()
+
+  try {
+    const resp = await fetch(`${UrlConstants.apiBaseUserUrl}/${userId.value['value']}/account`, {
+      method: 'GET',
+      headers: {
+        'token': token.value['value'],
+      }
+    });
+    switch (resp.status) {
+      case 200:
+        data.value = await resp.json()
+        break
+      case 401:
+        errorResponse.value = HttpResponsesConstant.unauthorized
+        break
+      default:
+        errorResponse.value = ''
+    }
+  } catch (error) {
+    errorResponse.value = error.toString()
+  }
+})
 </script>
 
 <template>
-  <div class="xs:mt-10 mb-10 w-full ">
+  <div class="xs:mt-10 mb-10 w-full">
+
+    <Footer class="mb-5" v-if="errorResponse" :response="errorResponse" />
 
     <div class="grid grid-cols-2 grid-rows-3 mb-5 max-xs:grid-col-span-full max-xs:items-stretch gap-5">
       <div class="row-1 col-span-full justify-self-center self-center max-xs:mt-5">
@@ -136,19 +69,14 @@ const jsonData =
       </div>
     </div>
 
-    <div class="grid-wrapper border border-white">
+    <div v-if="data !== null" class="grid-wrapper border border-white">
       <div class="header">
-        <div>Datum</div>
         <div>In</div>
         <div>Ut</div>
       </div>
-      <div v-for="(arr, key) in jsonData" class="date">
-        <div>{{ new Date(key).toLocaleDateString() }}</div>
-          <div v-for="value in arr" class="item">
-            <div>{{ 'Anv ' + value.user_id }}</div>
-            <div>{{ new Date(value.check_in).toLocaleTimeString() }}</div>
-            <div>{{ new Date(value.check_out).toLocaleTimeString() }}</div>
-          </div>
+      <div v-for="item in data" :key="item.id" class="item">
+        <div>{{ item.check_in }}</div>
+        <div>{{ item.check_out }}</div>
       </div>
     </div>
   </div>
@@ -162,18 +90,12 @@ const jsonData =
 }
 .header {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-.date {
-  display: grid;
-  grid-column: 1;
-  grid-template-columns: subgrid;
-  border: 1px solid blue;
+  grid-template-columns: repeat(2, 1fr);
 }
 .item {
   display: grid;
-  grid-column: 2;
-  grid-template-columns: repeat(3, 1fr);
+  grid-column: 1;
+  grid-template-columns: repeat(2, 1fr);
   border: 1px solid grey;
 }
 

@@ -1,4 +1,4 @@
-export const RouteConstants: object = {
+const RouteConstants: object = {
   home: {
     path: '/',
     name: 'home',
@@ -12,7 +12,9 @@ export const RouteConstants: object = {
     name: 'login',
   },
   user: {
-    path: '/user/{id}/account',
+    path: '/user/:id/account',
     name: 'user',
   }
 }
+
+export default RouteConstants
