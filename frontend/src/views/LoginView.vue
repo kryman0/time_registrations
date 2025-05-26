@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import UrlConstants from '@/Constants/UrlConstants.ts'
-import HttpResponsesConstant from '@/Constants/HttpResponseConstant.ts'
-import RouteConstants from '@/Constants/RouteConstants.ts'
+import UrlConstants from '@/constants/UrlConstants.ts'
+import HttpResponsesConstant from '@/constants/HttpResponseConstant.ts'
+import RouteConstants from '@/constants/RouteConstants.ts'
 
 const [ssn, password]: [string, string] = [ref(''), ref('')]
 const errorResponse: string = ref('')

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import RouteConstants from '@/Constants/RouteConstants.ts'
+import RouteConstants from '@/constants/RouteConstants.ts'
+import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,17 @@ const router = createRouter({
       path: RouteConstants.user.path,
       name: RouteConstants.user.name,
       component: () => import('@/views/UserView.vue'),
+      beforeEnter: async (to, from) => {
+        const userId = await window.cookieStore.get('userId')
+        const token = await window.cookieStore.get('token')
+
+        if (!userId && !token) {
+          const unauthMsg = HttpResponseConstant.unauthorized + '! You will be redirected to the login page.'
+          alert(unauthMsg)
+          return { name: RouteConstants.login.name }
+        }
+        return true
+      }
     }
   ],
 })

@@ -11,7 +11,7 @@ const model: string = defineModel()
 </script>
 
 <template>
-  <footer class="w-full mt-5 border-b border-dashed text-red-500">
+  <footer v-if="response" class="w-full mt-5 border-b border-dashed text-red-500">
     {{ response }}
   </footer>
 </template>

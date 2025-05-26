@@ -1,0 +1,94 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import UrlConstants from '@/constants/UrlConstants.ts'
+import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
+import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
+
+const isPasswordViewActive = defineModel({ type: Boolean, default: false })
+const [newPassword, retypedNewPassword]: [string, string] = [ref(''), ref('')]
+const passwordsDoNotMatch: boolean = ref(false)
+const responseInfo: any = ref(null)
+
+watch([newPassword, retypedNewPassword], (updatedValues) => {
+  const [p1, p2]: [string, string] = [updatedValues[0], updatedValues[1]]
+  passwordsDoNotMatch.value = p1 !== p2
+})
+
+async function changePassword() {
+  const [userId, token]: [string, string] = ['userId', 'token']
+  const cookie = await getCookieByKeys(userId, token)
+
+  if (!cookie || !cookie[userId] || !cookie[token]) {
+    responseInfo.value = HttpResponseConstant.noCookieGet
+    return
+  }
+
+  const resp = await fetch(UrlConstants.apiChangePasswordUrl, {
+    method: 'POST',
+    body: JSON.stringify({
+      id: cookie[userId], password: newPassword.value
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'token': cookie[token],
+    }
+  })
+  switch (resp.status) {
+    case 200:
+      responseInfo.value = await resp.text()
+      break
+    case 401:
+      responseInfo.value = HttpResponseConstant.unauthorized
+      break
+    default:
+      responseInfo.value = await resp.text()
+  }
+}
+</script>
+
+<template>
+  <div class="container w-60 h-60 border border-red-200 bg-blue-500">
+    <div
+      class="text-right pr-3 text-2xl"
+      @click="isPasswordViewActive = false">X
+    </div>
+    <div>
+      <p>
+        <label for="new-password">Enter new password</label>
+        <Input v-model="newPassword" class="change-password-input" id="new-password" type="password" placeholder="XXXXXX" required />
+      </p>
+      <p>
+        <label for="confirm-new-password">Re-enter new password</label>
+        <Input v-model="retypedNewPassword" class="change-password-input" id="confirm-new-password" type="password" placeholder="XXXXXX" required />
+      </p>
+      <p v-if="passwordsDoNotMatch">Passwords do not match!</p>
+      <p v-else>
+        <Button @click="changePassword" class="submit" />
+      </p>
+    </div>
+    <Footer class="text-center" :response="responseInfo" />
+  </div>
+</template>
+
+<style>
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  border-radius: 10px;
+
+  @media (max-width: 320px) {
+    width: 100%;
+    background-color: blue;
+  }
+}
+.submit {
+  display: block;
+  margin: 15px auto;
+
+  @media (max-width: 320px) {
+    width: 95%;
+  }
+}
+</style>

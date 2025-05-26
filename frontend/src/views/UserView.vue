@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
 import TimestampButton from "@/components/TimestampButton.vue"
-import ChangePassword from "@/views/ChangePassword.vue";
-import UrlConstants from '@/Constants/UrlConstants.ts'
-import HttpResponseConstant from "@/Constants/HttpResponseConstant.ts";
-import HttpResponsesConstant from "@/Constants/HttpResponseConstant.ts";
+import ChangePasswordView from "@/views/ChangePasswordView.vue";
+import UrlConstants from '@/constants/UrlConstants.ts'
+import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
+import HttpResponsesConstant from "@/constants/HttpResponseConstant.ts";
 
 const isPasswordViewActive = ref(false);
 const [userId, token]: [string, string] = [ref(''), ref('')]
@@ -58,7 +58,7 @@ onBeforeMount(async (): Promise<void> => {
       <div class="row-2 col-span-full justify-self-center self-center max-xs:w-full">
         <Button class="change-password-button" value="Change password" @click="isPasswordViewActive = true" />
         <div v-if="isPasswordViewActive" class="relative">
-          <ChangePassword v-model="isPasswordViewActive" />
+          <ChangePasswordView v-model="isPasswordViewActive" />
         </div>
       </div>
       <div class="max-xs:col-span-full">
