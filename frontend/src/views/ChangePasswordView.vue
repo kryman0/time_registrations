@@ -8,29 +8,29 @@ const isPasswordViewActive = defineModel({ type: Boolean, default: false })
 const [newPassword, retypedNewPassword]: [string, string] = [ref(''), ref('')]
 const passwordsDoNotMatch: boolean = ref(false)
 const responseInfo: any = ref(null)
+const cookie: object = ref(null)
 
-watch([newPassword, retypedNewPassword], (updatedValues) => {
+watch([newPassword, retypedNewPassword, cookie], (updatedValues) => {
   const [p1, p2]: [string, string] = [updatedValues[0], updatedValues[1]]
   passwordsDoNotMatch.value = p1 !== p2
 })
 
 async function changePassword() {
-  const [userId, token]: [string, string] = ['userId', 'token']
-  const cookie = await getCookieByKeys(userId, token)
+  cookie.value = await getCookieByKeys('userId', 'token')
 
-  if (!cookie || !cookie[userId] || !cookie[token]) {
+  if (!cookie || !cookie.value.userId || !cookie.value.token) {
     responseInfo.value = HttpResponseConstant.noCookieGet
     return
   }
 
-  const resp = await fetch(UrlConstants.apiChangePasswordUrl, {
+  const resp = await fetch(`${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/account`, {
     method: 'POST',
     body: JSON.stringify({
-      id: cookie[userId], password: newPassword.value
+      id: cookie.value.userId, password: newPassword.value
     }),
     headers: {
       'Content-Type': 'application/json',
-      'token': cookie[token],
+      'token': cookie.value.token,
     }
   })
   switch (resp.status) {

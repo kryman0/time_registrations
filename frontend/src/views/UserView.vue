@@ -1,33 +1,68 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import TimestampButton from "@/components/TimestampButton.vue"
 import ChangePasswordView from "@/views/ChangePasswordView.vue";
 import UrlConstants from '@/constants/UrlConstants.ts'
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 import HttpResponsesConstant from "@/constants/HttpResponseConstant.ts";
+import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
 
 const isPasswordViewActive = ref(false);
-const [userId, token]: [string, string] = [ref(''), ref('')]
-const errorResponse: string = ref('')
+const fetchResponse: string = ref('')
 const data: object = ref(null)
+const coords: object = ref(null)
+const cookie: object = ref(null)
+const checkIn: boolean = ref(false)
 
-async function getCookieStore(): void {
-  userId.value = await window.cookieStore.get('userId')
-  token.value = await window.cookieStore.get('token')
+watch(coords, async (newValue) => {
+  coords.value = await newValue
 
-  if (!userId.value || !token.value) {
-    errorResponse.value = HttpResponseConstant.noCookieGet
+  if (coords.value === null) {
+    fetchResponse.value = "Could not get location of the device"
+    return
   }
-}
 
-onBeforeMount(async (): Promise<void> => {
-  await getCookieStore()
+  const url = checkIn ?
+    `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkin`
+    : `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkout`
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      id: cookie.value.userId,
+      latitude_check_in: coords.value.latitude,
+      longitude_check_in: coords.value.longitude,
+      latitude_check_out: coords.value.latitude,
+      longitude_check_out: coords.value.longitude,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'token': cookie.value.token,
+    }
+  })
+
+  switch (resp.status) {
+    case 200:
+      fetchResponse.value = await resp.text()
+      break
+    default:
+      fetchResponse.value = await resp.text()
+  }
+})
+
+onBeforeMount(async () => {
+  cookie.value = await getCookieByKeys('userId', 'token')
+
+  if (!cookie || !cookie.value.userId || !cookie.value.token) {
+    fetchResponse.value = HttpResponseConstant.noCookieGet
+    return
+  }
 
   try {
-    const resp = await fetch(`${UrlConstants.apiBaseUserUrl}/${userId.value['value']}/account`, {
+    const resp = await fetch(`${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/account`, {
       method: 'GET',
       headers: {
-        'token': token.value['value'],
+        'token': cookie.value.token,
       }
     });
     switch (resp.status) {
@@ -35,21 +70,34 @@ onBeforeMount(async (): Promise<void> => {
         data.value = await resp.json()
         break
       case 401:
-        errorResponse.value = HttpResponsesConstant.unauthorized
+        fetchResponse.value = HttpResponsesConstant.unauthorized
         break
       default:
-        errorResponse.value = ''
+        fetchResponse.value = ''
     }
   } catch (error) {
-    errorResponse.value = error.toString()
+    fetchResponse.value = error.toString()
   }
 })
+
+async function registerTime(checkin: boolean, checkout: boolean): void {
+  checkIn.value = checkin
+
+  await window.navigator.geolocation.getCurrentPosition((success, error) => {
+    if (success) {
+      coords.value = success.coords;
+    }
+    else {
+      fetchResponse.value = error.toString()
+    }
+  })
+}
 </script>
 
 <template>
   <div class="xs:mt-10 mb-10 w-full">
 
-    <Footer class="mb-5" v-if="errorResponse" :response="errorResponse" />
+    <Footer class="mb-5 text-center" :response="fetchResponse" />
 
     <div class="grid grid-cols-2 grid-rows-3 mb-5 max-xs:grid-col-span-full max-xs:items-stretch gap-5">
       <div class="row-1 col-span-full justify-self-center self-center max-xs:mt-5">
@@ -62,10 +110,10 @@ onBeforeMount(async (): Promise<void> => {
         </div>
       </div>
       <div class="max-xs:col-span-full">
-        <TimestampButton :check_in="true" value="Check in" />
+        <TimestampButton @click="registerTime(true, false)" :check_in="true" value="Check in" />
       </div>
       <div class="xs:justify-self-end max-xs:col-span-full">
-        <TimestampButton :check_out="true" value="Check out" />
+        <TimestampButton @click="registerTime(false, true)" :check_out="true" value="Check out" />
       </div>
     </div>
 
