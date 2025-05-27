@@ -12,7 +12,7 @@ const fetchResponse: string = ref('')
 const data: object = ref(null)
 const coords: object = ref(null)
 const cookie: object = ref(null)
-const checkIn: boolean = ref(false)
+const isCheckIn: boolean = ref(true)
 
 watch(coords, async (newValue) => {
   coords.value = await newValue
@@ -22,14 +22,18 @@ watch(coords, async (newValue) => {
     return
   }
 
-  const url = checkIn ?
+  const url = isCheckIn.value ?
     `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkin`
     : `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkout`
+
+  console.log(!!isCheckIn.value)
 
   const resp = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
       id: cookie.value.userId,
+      check_in: isCheckIn.value ? true : false,
+      check_out: isCheckIn.value ? false : true,
       latitude_check_in: coords.value.latitude,
       longitude_check_in: coords.value.longitude,
       latitude_check_out: coords.value.latitude,
@@ -80,8 +84,8 @@ onBeforeMount(async () => {
   }
 })
 
-async function registerTime(checkin: boolean, checkout: boolean): void {
-  checkIn.value = checkin
+async function registerTime(checkIn: boolean, checkout: boolean): void {
+  isCheckIn.value = checkIn ?? checkout
 
   await window.navigator.geolocation.getCurrentPosition((success, error) => {
     if (success) {
@@ -109,11 +113,11 @@ async function registerTime(checkin: boolean, checkout: boolean): void {
           <ChangePasswordView v-model="isPasswordViewActive" />
         </div>
       </div>
-      <div class="max-xs:col-span-full">
-        <TimestampButton @click="registerTime(true, false)" :check_in="true" value="Check in" />
+      <div v-show="isCheckIn" class="max-xs:col-span-full">
+        <TimestampButton @click="registerTime(true, false)" value="Check in" />
       </div>
-      <div class="xs:justify-self-end max-xs:col-span-full">
-        <TimestampButton @click="registerTime(false, true)" :check_out="true" value="Check out" />
+      <div v-show="isCheckIn" class="xs:justify-self-end max-xs:col-span-full">
+        <TimestampButton @click="registerTime(false, true)" value="Check out" />
       </div>
     </div>
 
