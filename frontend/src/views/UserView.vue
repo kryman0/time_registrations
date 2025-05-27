@@ -13,6 +13,7 @@ const data: object = ref(null)
 const coords: object = ref(null)
 const cookie: object = ref(null)
 const isCheckIn: boolean = ref(true)
+const [checkInBtn, checkOutBtn]: [boolean, boolean][] = [ref(true), ref(true)]
 
 watch(coords, async (newValue) => {
   coords.value = await newValue
@@ -25,8 +26,6 @@ watch(coords, async (newValue) => {
   const url = isCheckIn.value ?
     `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkin`
     : `${UrlConstants.apiBaseUserUrl}/${cookie.value.userId}/checkout`
-
-  console.log(!!isCheckIn.value)
 
   const resp = await fetch(url, {
     method: 'POST',
@@ -48,6 +47,13 @@ watch(coords, async (newValue) => {
   switch (resp.status) {
     case 200:
       fetchResponse.value = await resp.text()
+      if (isCheckIn.value) {
+        checkInBtn.value = false
+        checkOutBtn.value = true
+      }
+      else {
+        checkInBtn.value = true
+      }
       break
     default:
       fetchResponse.value = await resp.text()
@@ -113,10 +119,10 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
           <ChangePasswordView v-model="isPasswordViewActive" />
         </div>
       </div>
-      <div v-show="isCheckIn" class="max-xs:col-span-full">
+      <div v-show="checkInBtn" class="max-xs:justify-self-center max-xs:col-span-full">
         <TimestampButton @click="registerTime(true, false)" value="Check in" />
       </div>
-      <div v-show="isCheckIn" class="xs:justify-self-end max-xs:col-span-full">
+      <div v-show="checkOutBtn" class="max-xs:justify-self-center max-xs:col-span-full xs:justify-self-end xs:col-2">
         <TimestampButton @click="registerTime(false, true)" value="Check out" />
       </div>
     </div>
