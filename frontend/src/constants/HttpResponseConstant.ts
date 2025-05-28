@@ -3,6 +3,7 @@ const HttpResponseConstants: object = {
   notFound: "NOT FOUND",
   noCookieGet: "Could not get cookie",
   noCookieSet: "Could not set cookie",
+  badRequest: "Bad request",
 }
 
 export default HttpResponseConstants;

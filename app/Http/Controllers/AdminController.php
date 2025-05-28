@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller {
-    public function showTimestamps(): Response {
+    public function showTimestamps(Request $request): Response {
         $timestamps = Timestamp::all()->sortByDesc('check_in')->toArray();
 
         $dictByCheckInDates = [];
@@ -19,7 +19,8 @@ class AdminController extends Controller {
             $dictByCheckInDates[$value['check_in']][] = $value;
         }
 
-        return response()->json($dictByCheckInDates)->header('Content-Type', 'application/json');
+
+        return response()->json($dictByCheckInDates)->setStatusCode(Response::HTTP_OK);
     }
 
     public function editTimestamp(Request $request): Response {

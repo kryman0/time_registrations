@@ -74,7 +74,8 @@ onBeforeMount(async () => {
       headers: {
         'token': cookie.value.token,
       }
-    });
+    })
+
     switch (resp.status) {
       case 200:
         data.value = await resp.json()
@@ -83,7 +84,7 @@ onBeforeMount(async () => {
         fetchResponse.value = HttpResponsesConstant.unauthorized
         break
       default:
-        fetchResponse.value = ''
+        fetchResponse.value = await resp.text()
     }
   } catch (error) {
     fetchResponse.value = error.toString()
@@ -115,8 +116,8 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
       </div>
       <div class="row-2 col-span-full justify-self-center self-center max-xs:w-full">
         <Button class="change-password-button" value="Change password" @click="isPasswordViewActive = true" />
-        <div v-if="isPasswordViewActive" class="relative">
-          <ChangePasswordView v-model="isPasswordViewActive" />
+        <div v-if="isPasswordViewActive && cookie.value !== null" class="relative">
+          <ChangePasswordView v-model="isPasswordViewActive" :cookie="cookie" />
         </div>
       </div>
       <div v-show="checkInBtn" class="max-xs:justify-self-center max-xs:col-span-full">

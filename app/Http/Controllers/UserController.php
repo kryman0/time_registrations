@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Timestamp;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+//use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -48,12 +47,18 @@ class UserController extends Controller
 
     public function account(int $userId): Response {
         $data = Timestamp::all()->where('user_id', $userId)->sortByDesc('check_in')->toArray();
-        $data = array_values($data);
+//        var_dump($data);
+//        $data = array_values($data);
+//        var_dump($data);
+
 
         if (!$data) {
             return response('No check in has been registered yet!');
         }
 
+//        $data = json_encode($data);
+
         return response()->json($data)->header('Content-Type', 'application/json')->setStatusCode(Response::HTTP_OK);
+//        return response("hello", 200)->header('Content-Type', 'text/plain');
     }
 }

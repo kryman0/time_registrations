@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import UrlConstants from '@/constants/UrlConstants.ts'
 import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
+
+const props = defineProps({
+  cookie: Object
+});
 
 const isPasswordViewActive = defineModel({ type: Boolean, default: false })
 const [newPassword, retypedNewPassword]: [string, string] = [ref(''), ref('')]
 const passwordsDoNotMatch: boolean = ref(false)
 const responseInfo: any = ref(null)
-const cookie: object = ref(null)
+const cookie = computed(() => props.cookie)
 
-watch([newPassword, retypedNewPassword, cookie], (updatedValues) => {
+watch([newPassword, retypedNewPassword], (updatedValues) => {
   const [p1, p2]: [string, string] = [updatedValues[0], updatedValues[1]]
   passwordsDoNotMatch.value = p1 !== p2
 })
 
 async function changePassword() {
-  cookie.value = await getCookieByKeys('userId', 'token')
-
   if (!cookie || !cookie.value.userId || !cookie.value.token) {
     responseInfo.value = HttpResponseConstant.noCookieGet
     return

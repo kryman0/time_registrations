@@ -7,7 +7,7 @@ defineProps({
   },
   placeholder: {
     type: String,
-    required: true,
+    required: false,
   },
   id: {
     type: String,
