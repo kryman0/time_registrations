@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const img: object = {
-  src: '/src/assets/pencil-edit-office-2-svgrepo-com.svg',
+  src: '/src/assets/edit_icon.svg',
   alt: 'Edit time',
   title: 'Edit time'
 }
