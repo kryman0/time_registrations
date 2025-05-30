@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watch, computed } from "vue";
 import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
 import UrlConstants from "@/constants/UrlConstants.ts";
-import HttpResponsesConstant from "@/constants/HttpResponseConstant.ts";
+import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 import EditImage from "@/components/icons/EditImage.vue";
 import SaveImage from "@/components/icons/SaveImage.vue";
+import { useNotifyTimestampChangeStore } from "@/stores/notifytimestampchangestore.ts";
+import { storeToRefs } from "pinia";
 
 const decimals = 4
 const lang = window.navigator.language
@@ -12,11 +14,55 @@ const dateTimeFormat = new Intl.DateTimeFormat(lang, {
   hour: '2-digit',
   minute: '2-digit',
 })
-const data: object = ref(null)
+const data: object = ref([null])
 const fetchResponse: string = ref('')
 const cookie: object = ref(null)
 const openedTimestamps: object = ref([])
 const timeInput: HTMLElement = ref(null)
+const store = useNotifyTimestampChangeStore()
+const { checkOut } = store
+const { isTimestampChange } = storeToRefs(store)
+
+store.$subscribe((m, s) => {
+  console.log("sub?", m, s)
+  // s.isTimestampChange = true
+})
+
+watch(isTimestampChange, async (newVal) => {
+  console.log('watch', newVal, isTimestampChange)
+
+  if (newVal.isTimestampChange) {
+    try {
+      const resp = await fetch(`${UrlConstants.apiAdminUrl}`, {
+        method: 'GET',
+        headers: {
+          'token': cookie.value.token,
+        },
+      })
+      switch (resp.status) {
+        case 200:
+          data.value = await resp.json()
+
+          // console.log(isTimestampChange)
+          break
+        case 400:
+          fetchResponse.value = HttpResponseConstant.unauthorized
+          break
+        case 401:
+          fetchResponse.value = await resp.text()
+          break
+        default:
+          fetchResponse.value = await resp.text()
+      }
+    } catch (error) {
+      fetchResponse.value = error.toString()
+    }
+  }
+})
+
+async function getTimestamps() {
+
+}
 
 onBeforeMount(async () => {
   cookie.value = await getCookieByKeys('userId', 'token')
@@ -38,7 +84,7 @@ onBeforeMount(async () => {
         data.value = await resp.json()
         break
       case 400:
-        fetchResponse.value = HttpResponsesConstant.unauthorized
+        fetchResponse.value = HttpResponseConstant.unauthorized
         break
       case 401:
         fetchResponse.value = await resp.text()
@@ -66,28 +112,42 @@ function handleTimestamp(event: Event, checkInCheckOutId: string) {
   }
 }
 
-async function editTimestamp(event: Event, isCheckIn: boolean, id: string) {
-  console.log(timeInput.value.value)
-  return
+async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
+  timeInput.value = event.target.parentElement.children[0]
+  if (!timeInput.value.value) {
+    fetchResponse.value = 'Please choose a datetime!'
+    return
+  }
+
   const resp = await fetch(`${UrlConstants.apiAdminUrl}/${id}/edit`, {
     method: 'POST',
     body: JSON.stringify({
       id: id,
-      check_in: checkIn ? true : null,
-      check_out: !checkIn ? true : null,
-      check_in_time: isCheckin ? timeInput.value.value : null,
+      check_in: isCheckIn ? true : null,
+      check_out: !isCheckIn ? true : null,
+      check_in_time: isCheckIn ? timeInput.value.value : null,
       check_out_time: !isCheckIn ? timeInput.value.value : null,
     }),
     headers: {
+      'Content-Type': 'application/json',
       'token': cookie.value.token,
     }
   })
 
+  switch (resp.status) {
+    case 200:
+      fetchResponse.value = await resp.text()
+      break
+    default:
+      fetchResponse.value = await resp.text()
+  }
 }
 </script>
 
 <template>
-  <Footer class="mt-5 mb-5" :response="fetchResponse" />
+  <Footer class="mt-5 mb-5 text-center" :response="fetchResponse" />
+
+  <div @click="checkOut(!isTimestampChange)">change the timestamp {{ isTimestampChange }}</div>
 
   <div class="grid grid-cols-1 gap-y-[1.5rem]">
     <div class="header-grid grid grid-cols-2 xs:grid-cols-3 2xs:grid-cols-4 sm:grid-cols-7">
@@ -103,25 +163,24 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: string) {
   <div v-if="data !== null"
        class="grid grid-cols-2 grid-cols-subgrid xs:grid-cols-3 xs:grid-cols-subgrid 2xs:grid-cols-4 2xs:grid-cols-subgrid sm:grid-cols-7 sm:grid-cols-subgrid"
        v-for="(arr, key) in data">
-    <div>{{ new Date(key).toLocaleDateString() }}</div>
+    <div>{{ key }}</div>
 
-    <div class="item-grid grid grid-cols-2 xs:grid-cols-3 2xs:grid-cols-4 sm:grid-cols-7" v-for="value in arr">
-      <div :key="value.id">{{ value.user_id }}</div>
+    <div class="item-grid grid grid-cols-2 xs:grid-cols-3 2xs:grid-cols-4 sm:grid-cols-7" v-for="value in arr" :key="value.id">
+      <div>{{ value.user_id }}</div>
       <div :id="'check_in_' + value.id">
         <Input
           :id="'check_in_' + value.id"
           class="hide-element check-in-out"
           type="datetime-local"
         />
-        <span>{{ dateTimeFormat.format(new Date(value.check_in)) }}</span>
+        <span>{{ value.check_in ? dateTimeFormat.format(new Date(value.check_in)) : '------' }}</span>
         <EditImage
-          @click="handleTimestamp($event, 'check_in_' + value.id)"
+          @click.prevent="handleTimestamp($event, 'check_in_' + value.id)"
           class="icon"
-
         />
         <SaveImage
-          @keyup.prevent="editTimestamp($event, true, value.id)"
-          @click.prevent="editTimestamp($event, true, value.id)"
+          @keyup="editTimestamp($event, true, value.id)"
+          @click="editTimestamp($event, true, value.id)"
           :id="'save_image_check_in_' + value.id"
           class="hide-element icon"
         />
@@ -132,14 +191,14 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: string) {
           class="hide-element check-in-out"
           type="datetime-local"
         />
-        <span>{{ dateTimeFormat.format(new Date(value.check_out)) }}</span>
+        <span>{{ value.check_out ? dateTimeFormat.format(new Date(value.check_out)) : "------" }}</span>
         <EditImage
-          @click="handleTimestamp($event, 'check_out_' + value.id)"
+          @click.prevent="handleTimestamp($event, 'check_out_' + value.id)"
           class="icon"
         />
         <SaveImage
-          @keyup.prevent="editTimestamp($event, true, value.id)"
-          @click.prevent="editTimestamp($event, true, value.id)"
+          @keyup="editTimestamp($event, false, value.id)"
+          @click="editTimestamp($event, false, value.id)"
           :id="'save_image_check_in_' + value.id"
           class="hide-element icon"
         />
@@ -154,9 +213,6 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: string) {
 </template>
 
 <style>
-body {
-  background-color: darkgray;
-}
 .hide-element {
   display: none;
 }
@@ -195,15 +251,19 @@ input.check-in-out {
   }
 }
 .icon {
+  padding-bottom: 5px;
+
   @media (max-width: 20rem) {
     width: 30%;
-    display: flex;
-    margin: 0;
-    padding: 0;
   }
 
   @media (max-width: 30rem) {
     margin-left: 5px;
+  }
+}
+.icon:first-of-type {
+  @media (max-width: 20rem) {
+    display: block;
   }
 }
 </style>

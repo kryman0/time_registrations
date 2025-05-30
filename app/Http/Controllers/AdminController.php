@@ -12,23 +12,24 @@ class AdminController extends Controller {
 
         $dictByCheckInDates = [];
         foreach ($timestamps as $value) {
-            if (!key_exists($value['check_in'], $dictByCheckInDates)) {
-                $dictByCheckInDates[$value['check_in']] = [];
+            $date = date_create_immutable($value['check_in'])->format("Y-m-d");
+
+            if (!key_exists($date, $dictByCheckInDates)) {
+                $dictByCheckInDates[$date] = [];
             }
 
-            $dictByCheckInDates[$value['check_in']][] = $value;
+            $dictByCheckInDates[$date][] = $value;
         }
-
 
         return response()->json($dictByCheckInDates)->setStatusCode(Response::HTTP_OK);
     }
 
     public function editTimestamp(Request $request): Response {
-        $tsId = $request->post('id');
+        $id = $request->post('id');
         $checkIn = $request->post('check_in_time');
         $checkOut = $request->post('check_out_time');
 
-        $ts = Timestamp::find($tsId);
+        $ts = Timestamp::find($id);
         $checkIn ? $ts->check_in = $checkIn : $ts->check_out = $checkOut;
         $ts->save();
 

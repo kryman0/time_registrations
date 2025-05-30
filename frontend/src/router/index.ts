@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RouteConstants from '@/constants/RouteConstants.ts'
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
+import { getCookieByKeys } from '@/handlers/CookieHandler.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,18 @@ const router = createRouter({
       path: RouteConstants.admin.path,
       name: RouteConstants.admin.name,
       component: () => import('@/views/AdminView.vue'),
+      beforeEnter: async (to, from) => {
+        const cookie = await getCookieByKeys('userId', 'token')
+
+        if (!cookie || typeof cookie === 'string') {
+          const unAuthMsg = HttpResponseConstant.unauthorized + '! You will be redirected to the login page.'
+
+          alert(unAuthMsg)
+
+          return { name: RouteConstants.login.name }
+        }
+        return true
+      }
     },
     {
       path: RouteConstants.login.path,
@@ -25,12 +38,13 @@ const router = createRouter({
       name: RouteConstants.user.name,
       component: () => import('@/views/UserView.vue'),
       beforeEnter: async (to, from) => {
-        const userId = await window.cookieStore.get('userId')
-        const token = await window.cookieStore.get('token')
+        const cookie = await getCookieByKeys('userId', 'token')
 
-        if (!userId && !token) {
-          const unauthMsg = HttpResponseConstant.unauthorized + '! You will be redirected to the login page.'
-          alert(unauthMsg)
+        if (!cookie || typeof cookie === 'string') {
+          const unAuthMsg = HttpResponseConstant.unauthorized + '! You will be redirected to the login page.'
+
+          alert(unAuthMsg)
+
           return { name: RouteConstants.login.name }
         }
         return true

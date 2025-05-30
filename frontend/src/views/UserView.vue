@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from "vue";
+import { computed, onBeforeMount, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
 import TimestampButton from "@/components/TimestampButton.vue"
 import ChangePasswordView from "@/views/ChangePasswordView.vue";
 import UrlConstants from '@/constants/UrlConstants.ts'
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 import HttpResponsesConstant from "@/constants/HttpResponseConstant.ts";
 import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
+import { useNotifyTimestampChangeStore } from "@/stores/notifytimestampchangestore.ts";
 
 const isPasswordViewActive = ref(false);
 const fetchResponse: string = ref('')
@@ -14,6 +16,15 @@ const coords: object = ref(null)
 const cookie: object = ref(null)
 const isCheckIn: boolean = ref(true)
 const [checkInBtn, checkOutBtn]: [boolean, boolean][] = [ref(true), ref(true)]
+const store = useNotifyTimestampChangeStore()
+const { checkIn } = store
+const { isTimestampChange } = storeToRefs(store)
+
+store.$subscribe((m, s) => {
+  console.log("sub?", m, s)
+  // s.isTimestampChange = true
+})
+
 
 watch(coords, async (newValue) => {
   coords.value = await newValue
@@ -54,6 +65,7 @@ watch(coords, async (newValue) => {
       else {
         checkInBtn.value = true
       }
+      notifyTimestampChangeStore.checkIn()
       break
     default:
       fetchResponse.value = await resp.text()
@@ -109,6 +121,7 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
   <div class="xs:mt-10 mb-10 w-full">
 
     <Footer class="mb-5 text-center" :response="fetchResponse" />
+    <div @click="checkIn(!isTimestampChange)">change the timestamp {{ isTimestampChange }}</div>
 
     <div class="grid grid-cols-2 grid-rows-3 mb-5 max-xs:grid-col-span-full max-xs:items-stretch gap-5">
       <div class="row-1 col-span-full justify-self-center self-center max-xs:mt-5">

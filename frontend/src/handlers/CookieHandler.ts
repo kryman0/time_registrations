@@ -4,7 +4,7 @@ async function getCookieByKeys(): object | string {
   const userId = await window.cookieStore.get(arguments[0])
   const token = await window.cookieStore.get(arguments[1])
 
-  if (!userId.value || !token.value) {
+  if (!userId || !userId.value || !token || !token.value) {
     return HttpResponseConstant.noCookieGet
   }
 

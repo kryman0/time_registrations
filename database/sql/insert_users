@@ -1,4 +1,5 @@
-INSERT INTO users VALUES (ssn, password) (
-    '19600501-0123',
-    '$2y$12$cHSZaoJH9NvfNZjvG3XbZO05ZsUQhqhAQlsMhH26rs92qJmYVn/oC'
-);
+INSERT INTO users (ssn, password) -- password: user
+    VALUES
+        ( '19611013-0123', '$2y$12$e2DPgGmf2kB1RgnNticiDO9f1OCjs5dDkIplhZ9ac8yd82Ggvhcyu'),
+        ( '19720602-2456', '$2y$12$e2DPgGmf2kB1RgnNticiDO9f1OCjs5dDkIplhZ9ac8yd82Ggvhcyu'),
+        ( '19830703-7890', '$2y$12$e2DPgGmf2kB1RgnNticiDO9f1OCjs5dDkIplhZ9ac8yd82Ggvhcyu');

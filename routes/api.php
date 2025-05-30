@@ -21,7 +21,6 @@ Route::controller(TimestampController::class)->group(function () {
 });
 
 Route::controller(AdminController::class)->group(function () {
-//    Route::get('/admin/timestamps', 'showTimestamps')->middleware([EnsureTokenIsValid::class])->name('admin.timestamps');
-    Route::get('/admin/timestamps', 'showTimestamps')->name('admin.timestamps');
-    Route::post('/admin/timestamp/{id}/edit', 'editTimestamp')->middleware([EnsureTokenIsValid::class, EnsureTimestampNotOverlapping::class])->name('admin.timestamp.edit');
+    Route::get('/admin/timestamps', 'showTimestamps')->middleware([EnsureTokenIsValid::class])->name('admin.timestamps');
+    Route::post('/admin/timestamps/{id}/edit', 'editTimestamp')->middleware([EnsureTokenIsValid::class, EnsureTimestampNotOverlapping::class])->name('admin.timestamps.edit');
 });
