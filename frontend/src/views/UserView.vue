@@ -14,6 +14,7 @@ const coords: object = ref(null)
 const cookie: object = ref(null)
 const isCheckIn: boolean = ref(true)
 const [checkInBtn, checkOutBtn]: [boolean, boolean][] = [ref(true), ref(true)]
+const userId: number = ref(null)
 
 watch(coords, async (newValue) => {
   coords.value = await newValue
@@ -86,6 +87,7 @@ async function getUserTimestamps() {
     switch (resp.status) {
       case 200:
         data.value = await resp.json()
+        userId.value = data.value[0]?.user_id
         break
       case 401:
         fetchResponse.value = HttpResponsesConstant.unauthorized
@@ -119,19 +121,19 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
 
     <div class="grid grid-cols-2 grid-rows-3 mb-5 max-xs:grid-col-span-full max-xs:items-stretch gap-5">
       <div class="row-1 col-span-full justify-self-center self-center max-xs:mt-5">
-        <h1>Welcome! {{$route.params.id}}</h1>
+        <h1>Welcome {{ userId }}</h1>
       </div>
       <div class="row-2 col-span-full justify-self-center self-center max-xs:w-full">
-        <Button class="change-password-button" value="Change password" @click="isPasswordViewActive = true" />
+        <Button class="grid-button" value="Change password" @click="isPasswordViewActive = true" />
         <div v-if="isPasswordViewActive && cookie.value !== null" class="relative">
           <ChangePasswordView v-model="isPasswordViewActive" :cookie="cookie" />
         </div>
       </div>
-      <div v-show="checkInBtn" class="max-xs:justify-self-center max-xs:col-span-full">
-        <TimestampButton @click="registerTime(true, false)" value="Check in" />
+      <div v-show="checkInBtn" class="max-xs:justify-self-center max-xs:col-span-full max-xs:w-full">
+        <TimestampButton @click="registerTime(true, false)" class="grid-button" value="Check in" />
       </div>
-      <div v-show="checkOutBtn" class="max-xs:justify-self-center max-xs:col-span-full xs:justify-self-end xs:col-2">
-        <TimestampButton @click="registerTime(false, true)" value="Check out" />
+      <div v-show="checkOutBtn" class="max-xs:justify-self-center max-xs:col-span-full xs:justify-self-end xs:col-2 max-xs:w-full">
+        <TimestampButton @click="registerTime(false, true)" class="grid-button" value="Check out" />
       </div>
     </div>
 
@@ -165,9 +167,8 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
   border: 1px solid grey;
 }
 
-.change-password-button {
+.grid-button {
   width: 130px;
-  padding: 5px;
 
   @media (max-width: 320px) {
     width: 100%;

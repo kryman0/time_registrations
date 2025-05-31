@@ -14,10 +14,20 @@
 <style>
   li {
     display: block;
-    margin-left: 20px;
+    width: 100%;
+    margin: 0 auto 5px;
+    padding: 5px;
+    background-color: indianred;
+    border-radius: 5px;
+    text-align: center;
 
-    @media (min-width: 320px) {
+    @media (min-width: 430px) {
+      width: 100px;
       display: inline-block;
+      margin-left: 20px;
     }
+  }
+  li a {
+    color: white;
   }
 </style>

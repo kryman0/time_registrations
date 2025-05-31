@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import UrlConstants from '@/constants/UrlConstants.ts'
 import HttpResponsesConstant from '@/constants/HttpResponseConstant.ts'
 import RouteConstants from '@/constants/RouteConstants.ts'
+import Input from "@/components/Input.vue";
+import Button from "@/components/Button.vue";
 
 const [ssn, password]: [string, string] = [ref(''), ref('')]
 const errorResponse: string = ref('')
@@ -74,12 +76,8 @@ function routeToUserAccount(userId: number): void {
       <Input v-model="password" id="password" type="password" :placeholder="passwordFormat" />
     </div>
 
-    <div class="input-container w-10">
-      <Button
-        class="w-45 mt-3 border border-white xs:w-28 xs:ml-16"
-        value="Login"
-        @click="login"
-      />
+    <div class="input-container">
+      <Button class="login-button" value="Login" @click="login" />
     </div>
 
     <div class="input-container">
@@ -93,16 +91,33 @@ function routeToUserAccount(userId: number): void {
   width: max-content;
   margin: 0 auto 0.7rem;
 }
+
 label {
   margin: 0.25rem 0;
 }
 
 input {
-  border: 1px solid green;
   display: block;
 
   @media (max-width: 320px) {
     width: 100%;
+  }
+}
+
+.login-button {
+  width: 190px;
+  margin-top: 10px;
+  padding: 6px 3px;
+
+  border: 1px solid darksalmon;
+  border-radius: 5px;
+  background-color: white;
+
+  @media (min-width: 320px) {
+    width: 6rem;
+    position: relative;
+    left: 0;
+    transform: translate(47%, 0);
   }
 }
 </style>

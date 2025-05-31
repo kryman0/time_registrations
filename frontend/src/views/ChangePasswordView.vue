@@ -50,10 +50,7 @@ async function changePassword() {
 
 <template>
   <div class="container w-60 h-60 border border-red-200 bg-blue-500">
-    <div
-      class="text-right pr-3 text-2xl"
-      @click="isPasswordViewActive = false">X
-    </div>
+    <div class="text-right pr-3 text-2xl" @click="isPasswordViewActive = false">X</div>
     <div>
       <p>
         <label for="new-password">Enter new password</label>
@@ -82,7 +79,7 @@ async function changePassword() {
 
   @media (max-width: 320px) {
     width: 100%;
-    background-color: blue;
+    background-color: ivory;
   }
 }
 .submit {
@@ -92,5 +89,9 @@ async function changePassword() {
   @media (max-width: 320px) {
     width: 95%;
   }
+}
+
+.change-password-input {
+
 }
 </style>

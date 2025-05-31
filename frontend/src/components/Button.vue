@@ -11,7 +11,3 @@ defineProps({
 <template>
   <button>{{ value }}</button>
 </template>
-
-<style>
-
-</style>
