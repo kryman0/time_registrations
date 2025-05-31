@@ -5,8 +5,6 @@ import UrlConstants from "@/constants/UrlConstants.ts";
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 import EditImage from "@/components/icons/EditImage.vue";
 import SaveImage from "@/components/icons/SaveImage.vue";
-import { useNotifyTimestampChangeStore } from "@/stores/notifytimestampchangestore.ts";
-import { storeToRefs } from "pinia";
 
 const decimals = 4
 const lang = window.navigator.language
@@ -19,59 +17,8 @@ const fetchResponse: string = ref('')
 const cookie: object = ref(null)
 const openedTimestamps: object = ref([])
 const timeInput: HTMLElement = ref(null)
-const store = useNotifyTimestampChangeStore()
-const { checkOut } = store
-const { isTimestampChange } = storeToRefs(store)
-
-store.$subscribe((m, s) => {
-  console.log("sub?", m, s)
-  // s.isTimestampChange = true
-})
-
-watch(isTimestampChange, async (newVal) => {
-  console.log('watch', newVal, isTimestampChange)
-
-  if (newVal.isTimestampChange) {
-    try {
-      const resp = await fetch(`${UrlConstants.apiAdminUrl}`, {
-        method: 'GET',
-        headers: {
-          'token': cookie.value.token,
-        },
-      })
-      switch (resp.status) {
-        case 200:
-          data.value = await resp.json()
-
-          // console.log(isTimestampChange)
-          break
-        case 400:
-          fetchResponse.value = HttpResponseConstant.unauthorized
-          break
-        case 401:
-          fetchResponse.value = await resp.text()
-          break
-        default:
-          fetchResponse.value = await resp.text()
-      }
-    } catch (error) {
-      fetchResponse.value = error.toString()
-    }
-  }
-})
 
 async function getTimestamps() {
-
-}
-
-onBeforeMount(async () => {
-  cookie.value = await getCookieByKeys('userId', 'token')
-
-  if (!cookie || !cookie.value.userId || !cookie.value.token) {
-    fetchResponse.value = HttpResponseConstant.noCookieGet
-    return
-  }
-
   try {
     const resp = await fetch(`${UrlConstants.apiAdminUrl}`, {
       method: 'GET',
@@ -95,6 +42,17 @@ onBeforeMount(async () => {
   } catch (error) {
     fetchResponse.value = error.toString()
   }
+}
+
+onBeforeMount(async () => {
+  cookie.value = await getCookieByKeys('userId', 'token')
+
+  if (!cookie || !cookie.value.userId || !cookie.value.token) {
+    fetchResponse.value = HttpResponseConstant.noCookieGet
+    return
+  }
+
+  await getTimestamps()
 })
 
 function handleTimestamp(event: Event, checkInCheckOutId: string) {
@@ -137,6 +95,12 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
   switch (resp.status) {
     case 200:
       fetchResponse.value = await resp.text()
+
+      const saveImageIcon = event.target.parentElement.children[3]
+      saveImageIcon.classList.replace('show-save-icon', 'hide-element')
+      timeInput.value.classList.replace('show-container', 'hide-element')
+
+      await getTimestamps()
       break
     default:
       fetchResponse.value = await resp.text()
@@ -146,8 +110,6 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
 
 <template>
   <Footer class="mt-5 mb-5 text-center" :response="fetchResponse" />
-
-  <div @click="checkOut(!isTimestampChange)">change the timestamp {{ isTimestampChange }}</div>
 
   <div class="grid grid-cols-1 gap-y-[1.5rem]">
     <div class="header-grid grid grid-cols-2 xs:grid-cols-3 2xs:grid-cols-4 sm:grid-cols-7">

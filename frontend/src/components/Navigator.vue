@@ -7,7 +7,6 @@
       <li><RouterLink class="router-link" to="/">Home</RouterLink></li>
       <li><RouterLink class="router-link" to="/login">Login</RouterLink></li>
       <li><RouterLink class="router-link" to="/admin">Admin</RouterLink></li>
-      <li><RouterLink class="router-link" to="/user/1/account">User</RouterLink></li>
     </ul>
   </nav>
 </template>
