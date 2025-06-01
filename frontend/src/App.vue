@@ -31,5 +31,6 @@ input, .grid-button {
 
 input:focus {
   background-color: bisque;
+  outline: 1px solid red;
 }
 </style>

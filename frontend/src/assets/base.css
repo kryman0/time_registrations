@@ -5,7 +5,6 @@
   --breakpoint-2xs: 30rem;
 }
 
-/* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -28,7 +27,6 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 }
 
-/* semantic color variables for this project */
 :root {
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
@@ -61,7 +59,6 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  /*margin: 0;*/
   font-weight: normal;
 }
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import UrlConstants from '@/constants/UrlConstants.ts'
-import { getCookieByKeys } from "@/handlers/CookieHandler.ts";
 import HttpResponseConstant from "@/constants/HttpResponseConstant.ts";
 
 const props = defineProps({
@@ -49,9 +48,9 @@ async function changePassword() {
 </script>
 
 <template>
-  <div class="container w-60 h-60 border border-red-200 bg-blue-500">
-    <div class="text-right pr-3 text-2xl" @click="isPasswordViewActive = false">X</div>
-    <div>
+  <div class="container w-60 h-65 border border-red-200 bg-blue-500">
+    <div class="text-right pr-3 text-2xl" @click="isPasswordViewActive = false"><span class="close-button">X</span></div>
+    <div class="w-50 m-auto">
       <p>
         <label for="new-password">Enter new password</label>
         <Input v-model="newPassword" class="change-password-input" id="new-password" type="password" placeholder="XXXXXX" required />
@@ -60,9 +59,9 @@ async function changePassword() {
         <label for="confirm-new-password">Re-enter new password</label>
         <Input v-model="retypedNewPassword" class="change-password-input" id="confirm-new-password" type="password" placeholder="XXXXXX" required />
       </p>
-      <p v-if="passwordsDoNotMatch">Passwords do not match!</p>
+      <p v-if="passwordsDoNotMatch" class="text-center">Passwords do not match!</p>
       <p v-else>
-        <Button @click="changePassword" class="submit" />
+        <Button @click="changePassword" class="submit w-20" />
       </p>
     </div>
     <Footer class="text-center" :response="responseInfo" />
@@ -75,23 +74,34 @@ async function changePassword() {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -40%);
+  background-color: ivory;
+  border: 1px solid indianred;
   border-radius: 10px;
 
   @media (max-width: 320px) {
     width: 100%;
-    background-color: ivory;
   }
 }
 .submit {
   display: block;
-  margin: 15px auto;
+  margin: 5px auto;
+  padding: 5px;
+  width: calc(var(--spacing) * 25);
+  background-color: navajowhite;
+  border: 1px solid bisque;
+  border-radius: 5px;
 
   @media (max-width: 320px) {
-    width: 95%;
+    width: 100%;
   }
 }
 
-.change-password-input {
+.close-button:hover {
+  cursor: pointer;
+}
 
+.change-password-input {
+  width: 100%;
+  margin: 10px 0 15px;
 }
 </style>

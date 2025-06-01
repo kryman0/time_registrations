@@ -137,7 +137,7 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
       </div>
     </div>
 
-    <div v-if="data !== null" class="grid-wrapper border border-white">
+    <div v-if="data !== null" class="grid-wrapper">
       <div class="header">
         <div>In</div>
         <div>Ut</div>
@@ -156,22 +156,34 @@ async function registerTime(checkIn: boolean, checkout: boolean): void {
   grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
 }
+
 .header {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  padding: 0 0 0 0.25rem;
 }
 .item {
   display: grid;
   grid-column: 1;
   grid-template-columns: repeat(2, 1fr);
-  border: 1px solid grey;
+  padding: 0.25rem;
 }
+.item:nth-child(odd) {
+  background-color: mediumturquoise;
+  mix-blend-mode: exclusion;
+  border-radius: 0.25rem;
+}
+
 
 .grid-button {
   width: 130px;
+  margin-top: 5px;
 
   @media (max-width: 320px) {
     width: 100%;
   }
+}
+.grid-button:hover {
+  cursor: pointer;
 }
 </style>

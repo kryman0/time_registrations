@@ -120,4 +120,7 @@ input {
     transform: translate(47%, 0);
   }
 }
+.login-button:hover {
+  cursor: pointer;
+}
 </style>

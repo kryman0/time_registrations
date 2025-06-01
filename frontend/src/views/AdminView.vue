@@ -125,7 +125,7 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
   <div v-if="data !== null"
        class="grid grid-cols-2 grid-cols-subgrid xs:grid-cols-3 xs:grid-cols-subgrid 2xs:grid-cols-4 2xs:grid-cols-subgrid sm:grid-cols-7 sm:grid-cols-subgrid"
        v-for="(arr, key) in data">
-    <div>{{ key }}</div>
+    <div class="date-header">{{ key }}</div>
 
     <div class="item-grid grid grid-cols-2 xs:grid-cols-3 2xs:grid-cols-4 sm:grid-cols-7" v-for="value in arr" :key="value.id">
       <div>{{ value.user_id }}</div>
@@ -184,6 +184,15 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
 .show-save-icon {
   display: inline;
 }
+
+.date-header {
+  display: inline-block;
+  width: 85px;
+  margin-bottom: 5px;
+  background-color: honeydew;
+  border-radius: 5px;
+}
+
 .header-grid, .item-grid {
   @media (max-width: 20rem) {
     grid-template-columns: 33% 33% 33%;
@@ -198,6 +207,21 @@ async function editTimestamp(event: Event, isCheckIn: boolean, id: number) {
     grid-template-columns: 10% 20% 20% 10% 10% 10% 10%;
   }
 }
+
+.header-grid, .date-header {
+  padding: 0 0 0 0.25rem;
+}
+
+.item-grid {
+  padding: 0.25rem;
+}
+
+.item-grid:nth-child(even) {
+  background-color: lavender;
+  mix-blend-mode: darken;
+  border-radius: 0.25rem;
+}
+
 input.check-in-out {
   @media (max-width: 20rem) {
     width: 90%;
@@ -212,6 +236,7 @@ input.check-in-out {
     width: 90%;
   }
 }
+
 .icon {
   padding-bottom: 5px;
 
