@@ -29,7 +29,7 @@ Since the migrations already exists, each of the files in the said folder can be
 First, either change the database/username/password to be used with your MariaDB instance, or use those preconfigured with the application's *.env* file. (You need to create a user and grant necessary privileges on your MariaDB server.)
 Second, create the database and execute the sql files in correct order, e.g. `mariadb -u time_reg -ptime_registrations -D time_registrations < database/sql/some_file`. The order should be first the users and after that the timestamps table, and there is also test data to be tried on, insert users and timestamps, respectively.
 
-In the root of the repo run `composer run dev`. This will start the backend application.
+In the root of the repo run `composer install` and `composer run dev`. This will install the project's dependencies and start the backend application.
 
 ### Frontend
 
