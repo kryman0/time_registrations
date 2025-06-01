@@ -253,4 +253,7 @@ input.check-in-out {
     display: block;
   }
 }
+.icon:hover {
+  cursor: pointer;
+}
 </style>
